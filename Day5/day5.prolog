@@ -1,5 +1,4 @@
-has_duplicate_char([A,A|_]).
-has_duplicate_char([_,B|Rest]) :- has_duplicate_char([B|Rest]).
+has_duplicate_char(List) :- once(nextto(X,X,List)).
 
 is_vowel(a).
 is_vowel(e).
@@ -7,11 +6,10 @@ is_vowel(i).
 is_vowel(o).
 is_vowel(u).
 
-count_vowels([], 0).
-count_vowels([C|Rest], I) :- is_vowel(C), count_vowels(Rest, I1), I is I1 + 1.
-count_vowels([C|Rest], I) :- count_vowels(Rest, I), \+ is_vowel(C).
+vowel_sum(In, Acc, Out) :- is_vowel(In), succ(Acc, Out).
+vowel_sum(In, X, X) :- \+ is_vowel(In).
 
-has_enough_vowels(Str) :- count_vowels(Str, X), X >= 3.
+has_enough_vowels(Str) :- foldl(vowel_sum, Str, 0, Result), Result >= 3.
 
 contains_bad_sequence([a,b|_]).
 contains_bad_sequence([c,d|_]).
@@ -53,7 +51,7 @@ count_nicer_words([], 0).
 count_nicer_words([Word|Rest], I) :-
     is_nicer_word(Word),
     count_nicer_words(Rest, I1),
-    I is I1 + 1.
+    succ(I1, I).
 count_nicer_words([Word|Rest], I) :-
     count_nicer_words(Rest, I),
     \+ is_nicer_word(Word).
@@ -70,5 +68,7 @@ get_words(Stream, [Word|Rest]) :-
 main(_) :- 
     open("input.txt", read, Input),
     get_words(Input, Words),
-    count_nicer_words(Words, Count),
-    print(Count).
+    count_nice_words(Words, NiceCount),
+    count_nicer_words(Words, NicerCount),
+    %print(NiceCount),
+    print(NicerCount).
